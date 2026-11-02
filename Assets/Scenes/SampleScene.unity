@@ -555,6 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1587165109}
   - component: {fileID: 1587165108}
+  - component: {fileID: 1587165110}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -581,6 +582,8 @@ MonoBehaviour:
   capacity2: 40
   radioSpawn2: 40
   radiusZone: 50
+  bulletPrefab: {fileID: 7118180308171954850, guid: 13e59aa77170b6d4cb957061258386b0, type: 3}
+  numberOfBullets: 20
   boids: []
 --- !u!4 &1587165109
 Transform:
@@ -597,6 +600,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1587165110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587165107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb653e13fd0202048a8126e2971c61a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootRequestManager
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

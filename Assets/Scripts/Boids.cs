@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -38,6 +40,7 @@ public class Boids : MonoBehaviour
     {
         boidManager = BoidManager.Instance;
         direction = transform.forward;
+        
     }
     private void Update()
     {
@@ -165,8 +168,17 @@ public class Boids : MonoBehaviour
         float angle = Vector3.Angle(this.transform.forward, dirOther);
         if (angle < seeingAngle)
         {
+            RequestShoot();
             return true;
         }
         return false;
     }
+    void RequestShoot()
+    {
+        bool success = true;
+        ShootRequestManager.RequestShoot(this.transform, boidManager.GetBulletPrefab(), (result) =>
+        {
+            success = result;
+        });
+    }   
 }
