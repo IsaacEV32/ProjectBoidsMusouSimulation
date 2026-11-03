@@ -9,7 +9,6 @@ public class Bullet : MonoBehaviour
     public void LaunchBullet()
     {
         StartCoroutine(MoveBulletLoop());
-        
     }
     IEnumerator MoveBulletLoop()
     {
@@ -20,7 +19,7 @@ public class Bullet : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        ShootRequestManager.Instance.FinishProcessingShoot();
+        
         transform.gameObject.SetActive(false);
     }
 }

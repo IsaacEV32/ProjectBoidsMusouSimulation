@@ -61,7 +61,6 @@ public class BoidManager : MonoBehaviour
     }
     public void Shoot(Transform shootOrigin)
     {
-
         foreach (GameObject bullet in bullets)
         {
             if (!bullet.activeInHierarchy)
@@ -70,8 +69,10 @@ public class BoidManager : MonoBehaviour
                 bullet.transform.position = shootOrigin.position;
                 bullet.transform.forward = shootOrigin.forward;
                 bullet.GetComponent<Bullet>().LaunchBullet();
+                ShootRequestManager.Instance.FinishProcessingShoot();
                 break;
             }
         }
+
     }
 }

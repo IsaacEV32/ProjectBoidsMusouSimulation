@@ -470,7 +470,7 @@ MonoBehaviour:
   radioSpawn2: 40
   radiusZone: 50
   bulletPrefab: {fileID: 7118180308171954850, guid: 13e59aa77170b6d4cb957061258386b0, type: 3}
-  numberOfBullets: 20
+  numberOfBullets: 50
   boids: []
 --- !u!4 &1587165109
 Transform:

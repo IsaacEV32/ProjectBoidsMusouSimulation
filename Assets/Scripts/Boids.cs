@@ -40,7 +40,8 @@ public class Boids : MonoBehaviour
     {
         boidManager = BoidManager.Instance;
         direction = transform.forward;
-        
+        StartCoroutine(ShootCoroutine());
+
     }
     private void Update()
     {
@@ -61,7 +62,6 @@ public class Boids : MonoBehaviour
 
         transform.forward = Vector3.Lerp(transform.forward, objectiveDirection, spinSpeed * Time.deltaTime);
         transform.position += transform.forward * speed * Time.deltaTime;
-
     }
     private void CalculateNeighbourhood()
     {
@@ -125,10 +125,6 @@ public class Boids : MonoBehaviour
             {
                 dirEscape -= transform.up;
             }
-            else if (Physics.Raycast(transform.position, -transform.forward, out hit, separationRadius, obstacleLayer))
-            {
-                dirEscape += transform.forward;
-            }
             else if (Physics.Raycast(transform.position, transform.forward, out hit, separationRadius, obstacleLayer))
             {
                 dirEscape -= transform.forward;
@@ -168,17 +164,40 @@ public class Boids : MonoBehaviour
         float angle = Vector3.Angle(this.transform.forward, dirOther);
         if (angle < seeingAngle)
         {
-            RequestShoot();
             return true;
         }
         return false;
     }
+    IEnumerator ShootCoroutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+            for(int i = 0; i < boidManager.boids.Count; i++)
+            {
+                if(SeeOtherFaction(boidManager.boids[i]))
+                {
+                    RequestShoot();
+                }
+            }
+        }
+    }
+    bool SeeOtherFaction(Boids other)
+    {
+        if(other.factionMask != this.factionMask)
+        {
+            Vector3 dirOther = other.transform.position - this.transform.position;
+            float angle = Vector3.Angle(this.transform.forward, dirOther);
+            if (angle < seeingAngle)
+            {
+                
+                return true;
+            }
+        }
+        return false;
+    }   
     void RequestShoot()
     {
-        bool success = true;
-        ShootRequestManager.RequestShoot(this.transform, boidManager.GetBulletPrefab(), (result) =>
-        {
-            success = result;
-        });
+        ShootRequestManager.RequestShoot(this.transform, boidManager.GetBulletPrefab());
     }   
 }

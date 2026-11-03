@@ -26,23 +26,24 @@ public class ShootRequestManager : MonoBehaviour
     {
         public Transform shootOrigin;
         public GameObject bulletPrefab;
-        public Action<bool> callback;
-        public ShootRequest(Transform shootOrigin, GameObject bulletPrefab, Action<bool> callback)
+        public ShootRequest(Transform shootOrigin, GameObject bulletPrefab)
         {
             this.shootOrigin = shootOrigin;
             this.bulletPrefab = bulletPrefab;
-            this.callback = callback;
         }
     }
-    public static void RequestShoot(Transform shootOrigin, GameObject bulletPrefab, Action<bool> callback)
+    public static void RequestShoot(Transform shootOrigin, GameObject bulletPrefab)
     {
-        ShootRequest newRequest = new ShootRequest(shootOrigin, bulletPrefab, callback);
+        if(Instance.shootRequests.Count >= 50)
+        {
+            return;
+        }
+        ShootRequest newRequest = new ShootRequest(shootOrigin, bulletPrefab);
         Instance.shootRequests.Enqueue(newRequest);
         Instance.TryProcessNext();
     }
     public void FinishProcessingShoot()
     {
-        currentShootRequest.callback(true);
         isProcessingRequest = false;
         TryProcessNext();
     }
