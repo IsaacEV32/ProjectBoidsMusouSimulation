@@ -68,11 +68,18 @@ public class BoidManager : MonoBehaviour
                 bullet.SetActive(true);
                 bullet.transform.position = shootOrigin.position;
                 bullet.transform.forward = shootOrigin.forward;
-                bullet.GetComponent<Bullet>().LaunchBullet();
-                ShootRequestManager.Instance.FinishProcessingShoot();
-                break;
+                bullet.GetComponent<Bullet>().LaunchBullet(shootOrigin.gameObject.GetComponent<Boids>().factionMask, shootOrigin);
+                StartCoroutine(DelayForBullets());
+                return;
             }
         }
-
+        GameObject newBullet = Instantiate(bulletPrefab, shootOrigin.position, shootOrigin.rotation);
+        newBullet.SetActive(false);
+        bullets.Add(newBullet);
+    }
+    IEnumerator DelayForBullets()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ShootRequestManager.Instance.FinishProcessingShoot();
     }
 }

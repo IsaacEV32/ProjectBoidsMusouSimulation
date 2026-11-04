@@ -1,0 +1,36 @@
+{
+    "version": 1,
+    "name": "GameMAnager",
+    "maps": [
+        {
+            "name": "Manager",
+            "id": "73d95427-5778-4cf9-8754-f2d93c1afce0",
+            "actions": [
+                {
+                    "name": "Restart",
+                    "type": "Button",
+                    "id": "8bb3f228-bb18-4f40-9422-eba1c284e081",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7857e49c-5c1e-4e84-a3c0-d0eedf0f7391",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Restart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

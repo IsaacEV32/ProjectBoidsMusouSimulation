@@ -11,18 +11,23 @@ public class Boids : MonoBehaviour
     [Header("Perception")]
     [SerializeField] float radius = 5;
     [SerializeField] float separationRadius = 4;
+    [Header("Weights")]
     public float weightCohesion = 1, weightAlineation = 1, weightSeparation = 1.5f;
     public float weightLimit = 5;
-    float weightObstacle = 6;
+    public float weightObstacle = 6;
 
-    float weightFaction = 10;
+    public float weightFaction = 4;
+    [Header("Layers")]
     [SerializeField] public LayerMask factionMask;
+    public LayerMask obstacleLayer;
     static readonly ProfilerMarker pNormasVecinidad = new ProfilerMarker("NormasVecinidad");
+    static readonly ProfilerMarker pCosteLimite = new ProfilerMarker("CosteLimite");
+    static readonly ProfilerMarker pCosteObstaculo = new ProfilerMarker("CosteObstaculo");
+    static readonly ProfilerMarker pCosteFaction = new ProfilerMarker("CosteFaction");
 
 
     float seeingAngle = 30;
     BoidManager boidManager;
-    public LayerMask obstacleLayer;
 
     Vector3 direction;
     Vector3 cohesion;
@@ -32,7 +37,7 @@ public class Boids : MonoBehaviour
     Vector3 limit;
     Vector3 obstacle;
     Vector3 faction;
-    public Vector3 objectiveDirection;
+    Vector3 objectiveDirection;
 
     const int MAX_NEIGHBOURS = 15;
 
@@ -49,9 +54,18 @@ public class Boids : MonoBehaviour
         {
             CalculateNeighbourhood();
         }
-        limit = CalculateLimit();
-        obstacle = CalculateObstacle();
-        faction = CalculateFactionDistance();
+        using (pCosteLimite.Auto())
+        {
+            limit = CalculateLimit();
+        }
+        using (pCosteObstaculo.Auto())
+        {
+            obstacle = CalculateObstacle();
+        }
+        using (pCosteFaction.Auto())
+        {
+            faction = CalculateFactionDistance();
+        }
         objectiveDirection =
             (cohesion * weightCohesion + alineation * weightAlineation
             + separation * weightSeparation + limit * weightLimit + obstacle * weightObstacle + faction * weightFaction).normalized;
@@ -89,14 +103,14 @@ public class Boids : MonoBehaviour
                 numNeighbours++;
             }
         }
-        separation = (dir_Separation).normalized;
+        separation = dir_Separation;
         if (numNeighbours == 0)
         {
             return;
         }
         center /= numNeighbours;
-        cohesion = (center - transform.position).normalized;
-        alineation = (dir_Alineation / numNeighbours).normalized;
+        cohesion = center - transform.position;
+        alineation = dir_Alineation / numNeighbours;
 
 
     }
@@ -106,7 +120,7 @@ public class Boids : MonoBehaviour
         {
             return Vector3.zero;
         }
-        return (boidManager.transform.position - transform.position).normalized;
+        return (boidManager.transform.position - transform.position);
     }
     public Vector3 CalculateObstacle()
     {
@@ -129,7 +143,7 @@ public class Boids : MonoBehaviour
             {
                 dirEscape -= transform.forward;
             }
-            return dirEscape.normalized;
+            return dirEscape;
         }
 
         return Vector3.zero;
@@ -138,19 +152,20 @@ public class Boids : MonoBehaviour
     {
         Vector3 bestDir = Vector3.zero;
         float bestDist = float.MaxValue;
-        for (int i = 0; i < boidManager.boids.Count; i++)
+        List<Boids> boids = boidManager.boids;
+        for (int i = 0; i < boids.Count; i++)
         {
-            if (boidManager.boids[i] == this || (boidManager.boids[i].factionMask.value & this.factionMask.value) != 0)
+            if (boids[i] == this || (boids[i].factionMask.value & this.factionMask.value) != 0)
             {
                 continue;
             }
-            if ((boidManager.boids[i].factionMask.value & this.factionMask.value) == 0 && Seeing(boidManager.boids[i]))
+            if ((boids[i].factionMask.value & this.factionMask.value) == 0 && Seeing(boids[i]))
             {
-                Vector3 toBoid = boidManager.boids[i].transform.position - transform.position;
+                Vector3 toBoid = boids[i].transform.position - transform.position;
                 if (toBoid.sqrMagnitude < bestDist)
                 {
                     bestDist = toBoid.sqrMagnitude;
-                    bestDir = toBoid.normalized;
+                    bestDir = toBoid;
                 }
             }
 
@@ -170,34 +185,40 @@ public class Boids : MonoBehaviour
     }
     IEnumerator ShootCoroutine()
     {
+        List<Boids> boids = boidManager.boids;
         while (true)
         {
             yield return new WaitForSeconds(1f);
-            for(int i = 0; i < boidManager.boids.Count; i++)
+            for (int i = 0; i < boids.Count; i++)
             {
-                if(SeeOtherFaction(boidManager.boids[i]))
+                if (SeeOtherFaction(boids[i]))
                 {
                     RequestShoot();
+                    yield return null;
                 }
             }
         }
     }
     bool SeeOtherFaction(Boids other)
     {
-        if(other.factionMask != this.factionMask)
+        if (other.factionMask != this.factionMask)
         {
             Vector3 dirOther = other.transform.position - this.transform.position;
             float angle = Vector3.Angle(this.transform.forward, dirOther);
             if (angle < seeingAngle)
             {
-                
+
                 return true;
             }
         }
         return false;
-    }   
+    }
     void RequestShoot()
     {
         ShootRequestManager.RequestShoot(this.transform, boidManager.GetBulletPrefab());
-    }   
+    }
+    public void StopShootCoroutine()
+    {
+        StopCoroutine(ShootCoroutine());
+    }
 }

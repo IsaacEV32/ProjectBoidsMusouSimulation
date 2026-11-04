@@ -53,6 +53,11 @@ public class ShootRequestManager : MonoBehaviour
         {
             currentShootRequest = shootRequests.Dequeue();
             isProcessingRequest = true;
+            if (!currentShootRequest.shootOrigin.gameObject.activeSelf)
+            {
+                FinishProcessingShoot();
+                return;
+            }
             boidManager.Shoot(currentShootRequest.shootOrigin);
         }
     }
