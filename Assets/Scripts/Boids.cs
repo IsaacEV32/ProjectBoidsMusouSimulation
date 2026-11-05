@@ -54,17 +54,20 @@ public class Boids : MonoBehaviour
         {
             CalculateNeighbourhood();
         }
-        using (pCosteLimite.Auto())
+        if (Time.frameCount % 5 == 0)
         {
-            limit = CalculateLimit();
-        }
-        using (pCosteObstaculo.Auto())
-        {
-            obstacle = CalculateObstacle();
-        }
-        using (pCosteFaction.Auto())
-        {
-            faction = CalculateFactionDistance();
+            using (pCosteLimite.Auto())
+            {
+                limit = CalculateLimit();
+            }
+            using (pCosteObstaculo.Auto())
+            {
+                obstacle = CalculateObstacle();
+            }
+            using (pCosteFaction.Auto())
+            {
+                faction = CalculateFactionDistance();
+            }
         }
         objectiveDirection =
             (cohesion * weightCohesion + alineation * weightAlineation
@@ -194,9 +197,10 @@ public class Boids : MonoBehaviour
                 if (SeeOtherFaction(boids[i]))
                 {
                     RequestShoot();
-                    yield return null;
+                    break;
                 }
             }
+            yield return null;
         }
     }
     bool SeeOtherFaction(Boids other)

@@ -107,7 +107,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -131,13 +131,13 @@ MonoBehaviour:
   separationRadius: 4
   weightCohesion: 1
   weightAlineation: 1
-  weightSeparation: 1.5
+  weightSeparation: 3.5
   weightLimit: 5
   weightObstacle: 6
   weightFaction: 4
   factionMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 256
