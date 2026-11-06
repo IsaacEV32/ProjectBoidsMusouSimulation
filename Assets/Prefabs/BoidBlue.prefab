@@ -131,10 +131,10 @@ MonoBehaviour:
   separationRadius: 4
   weightCohesion: 1
   weightAlineation: 1
-  weightSeparation: 3.5
+  weightSeparation: 5
   weightLimit: 5
   weightObstacle: 6
-  weightFaction: 4
+  weightFaction: 3.5
   factionMask:
     serializedVersion: 2
     m_Bits: 128
