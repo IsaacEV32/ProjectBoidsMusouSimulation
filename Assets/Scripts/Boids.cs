@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Profiling;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class Boids : MonoBehaviour
 {
@@ -40,13 +41,14 @@ public class Boids : MonoBehaviour
     Vector3 objectiveDirection;
 
     const int MAX_NEIGHBOURS = 15;
-
+    float seeingCos;
     private void Start()
     {
         boidManager = BoidManager.Instance;
         direction = transform.forward;
         StartCoroutine(ShootCoroutine());
-
+        //We calculate the cosin of the angle in radians
+        seeingCos = math.cos(seeingAngle * math.TORADIANS);
     }
     private void Update()
     {
@@ -54,17 +56,20 @@ public class Boids : MonoBehaviour
         {
             CalculateNeighbourhood();
         }
-        using (pCosteLimite.Auto())
+        if (Time.frameCount % 5 == 0)
         {
-            limit = CalculateLimit();
-        }
-        using (pCosteObstaculo.Auto())
-        {
-            obstacle = CalculateObstacle();
-        }
-        using (pCosteFaction.Auto())
-        {
-            faction = CalculateFactionDistance();
+            using (pCosteLimite.Auto())
+            {
+                limit = CalculateLimit();
+            }
+            using (pCosteObstaculo.Auto())
+            {
+                obstacle = CalculateObstacle();
+            }
+            using (pCosteFaction.Auto())
+            {
+                faction = CalculateFactionDistance();
+            }
         }
         objectiveDirection =
             (cohesion * weightCohesion + alineation * weightAlineation
@@ -175,10 +180,10 @@ public class Boids : MonoBehaviour
 
     bool Seeing(Boids other)
     {
-        Vector3 dirOther = other.transform.position - this.transform.position;
-        float angle = Vector3.Angle(this.transform.forward, dirOther);
-        if (angle < seeingAngle)
-        {
+        Vector3 dirOther = (other.transform.position - this.transform.position).normalized;
+        float cosRel = Vector3.Dot(transform.forward, dirOther);
+        if (cosRel > seeingCos) 
+        { 
             return true;
         }
         return false;
@@ -194,20 +199,20 @@ public class Boids : MonoBehaviour
                 if (SeeOtherFaction(boids[i]))
                 {
                     RequestShoot();
-                    yield return null;
+                    break;
                 }
             }
+            yield return null;
         }
     }
     bool SeeOtherFaction(Boids other)
     {
         if (other.factionMask != this.factionMask)
         {
-            Vector3 dirOther = other.transform.position - this.transform.position;
-            float angle = Vector3.Angle(this.transform.forward, dirOther);
-            if (angle < seeingAngle)
+            Vector3 dirOther = (other.transform.position - this.transform.position).normalized;
+            float cosRel = Vector3.Dot(transform.forward, dirOther);
+            if (cosRel > seeingCos)
             {
-
                 return true;
             }
         }
