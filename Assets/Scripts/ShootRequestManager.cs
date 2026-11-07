@@ -10,6 +10,7 @@ public class ShootRequestManager : MonoBehaviour
     public static ShootRequestManager Instance;
     BoidManager boidManager;
     bool isProcessingRequest = false;
+    static int maxRequests;
     private void Awake()
     {
         if (Instance == null)
@@ -21,6 +22,7 @@ public class ShootRequestManager : MonoBehaviour
             Destroy(this);
         }
         boidManager = GetComponent<BoidManager>();
+        maxRequests = boidManager.GetNumberOfBullets();
     }
     struct ShootRequest
     {
@@ -34,7 +36,7 @@ public class ShootRequestManager : MonoBehaviour
     }
     public static void RequestShoot(Transform shootOrigin, GameObject bulletPrefab)
     {
-        if(Instance.shootRequests.Count >= 50)
+        if(Instance.shootRequests.Count >= maxRequests)
         {
             return;
         }

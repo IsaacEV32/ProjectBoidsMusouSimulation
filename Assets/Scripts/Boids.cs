@@ -167,7 +167,7 @@ public class Boids : MonoBehaviour
             if ((boids[i].factionMask.value & this.factionMask.value) == 0 && Seeing(boids[i]))
             {
                 Vector3 toBoid = boids[i].transform.position - transform.position;
-                if (toBoid.sqrMagnitude < bestDist)
+                if (toBoid.sqrMagnitude < bestDist && toBoid.sqrMagnitude > 1e-6 && toBoid.sqrMagnitude < radius * radius)
                 {
                     bestDist = toBoid.sqrMagnitude;
                     bestDir = toBoid;
@@ -196,7 +196,8 @@ public class Boids : MonoBehaviour
             yield return new WaitForSeconds(1f);
             for (int i = 0; i < boids.Count; i++)
             {
-                if (SeeOtherFaction(boids[i]))
+                Vector3 toBoid = boids[i].transform.position - transform.position;
+                if (toBoid.sqrMagnitude > 1e-6 && toBoid.sqrMagnitude < radius * radius && SeeOtherFaction(boids[i]))
                 {
                     RequestShoot();
                     break;

@@ -34,6 +34,10 @@ public class BoidManager : MonoBehaviour
     {
         return bulletPrefab;
     }
+    public int GetNumberOfBullets()
+    {
+        return numberOfBullets;
+    }
     public List<Boids> boids = new List<Boids>();
     List<GameObject> bullets = new List<GameObject>();
     private void Start()
