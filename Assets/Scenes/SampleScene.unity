@@ -578,11 +578,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BoidManager
   boidPrefab: {fileID: 1204954780947653916, guid: 9d8c735cd43be2447a6f307a7186d7b9, type: 3}
   boid2Prefab: {fileID: 917705379512683387, guid: 7a17e73a78f4779449e2b113bb30553b, type: 3}
-  capacity1: 50
-  radioSpawn1: 20
-  capacity2: 50
-  radioSpawn2: 20
-  radiusZone: 30
+  capacity1: 80
+  radioSpawn1: 40
+  capacity2: 80
+  radioSpawn2: 40
+  radiusZone: 20
   bulletPrefab: {fileID: 7118180308171954850, guid: 13e59aa77170b6d4cb957061258386b0, type: 3}
   numberOfBullets: 50
   boids: []
