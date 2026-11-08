@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Profiling;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.Android;
 
 public class Boids : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class Boids : MonoBehaviour
     static readonly ProfilerMarker pCosteLimite = new ProfilerMarker("CosteLimite");
     static readonly ProfilerMarker pCosteObstaculo = new ProfilerMarker("CosteObstaculo");
     static readonly ProfilerMarker pCosteFaction = new ProfilerMarker("CosteFaction");
+    static readonly ProfilerMarker pCosteVision = new ProfilerMarker("CosteVision");
 
 
     float seeingAngle = 30;
@@ -180,13 +182,16 @@ public class Boids : MonoBehaviour
 
     bool Seeing(Boids other)
     {
-        Vector3 dirOther = (other.transform.position - this.transform.position).normalized;
-        float cosRel = Vector3.Dot(transform.forward, dirOther);
-        if (cosRel > seeingCos) 
-        { 
-            return true;
+        using (pCosteVision.Auto())
+        {
+            Vector3 dirOther = (other.transform.position - this.transform.position).normalized;
+            float cosRel = Vector3.Dot(transform.forward, dirOther);
+            if (cosRel > seeingCos)
+            {
+                return true;
+            }
+            return false;
         }
-        return false;
     }
     IEnumerator ShootCoroutine()
     {
