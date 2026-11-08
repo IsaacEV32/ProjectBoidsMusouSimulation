@@ -1,7 +1,8 @@
-using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
+using Unity.Profiling;
+using UnityEngine;
 
 public class ShootRequestManager : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class ShootRequestManager : MonoBehaviour
     public static ShootRequestManager Instance;
     BoidManager boidManager;
     bool isProcessingRequest = false;
+    static int maxRequests;
+    static readonly ProfilerMarker pShootRequest = new ProfilerMarker("ShootRequest");
     private void Awake()
     {
         if (Instance == null)
@@ -21,6 +24,7 @@ public class ShootRequestManager : MonoBehaviour
             Destroy(this);
         }
         boidManager = GetComponent<BoidManager>();
+        maxRequests = boidManager.GetNumberOfBullets();
     }
     struct ShootRequest
     {
@@ -32,9 +36,11 @@ public class ShootRequestManager : MonoBehaviour
             this.bulletPrefab = bulletPrefab;
         }
     }
+
     public static void RequestShoot(Transform shootOrigin, GameObject bulletPrefab)
     {
-        if(Instance.shootRequests.Count >= 50)
+
+        if (Instance.shootRequests.Count >= maxRequests)
         {
             return;
         }
@@ -49,16 +55,19 @@ public class ShootRequestManager : MonoBehaviour
     }
     void TryProcessNext()
     {
-        if (!isProcessingRequest && shootRequests.Count > 0)
+        using (pShootRequest.Auto())
         {
-            currentShootRequest = shootRequests.Dequeue();
-            isProcessingRequest = true;
-            if (!currentShootRequest.shootOrigin.gameObject.activeSelf)
+            if (!isProcessingRequest && shootRequests.Count > 0)
             {
-                FinishProcessingShoot();
-                return;
+                currentShootRequest = shootRequests.Dequeue();
+                isProcessingRequest = true;
+                if (!currentShootRequest.shootOrigin.gameObject.activeSelf)
+                {
+                    FinishProcessingShoot();
+                    return;
+                }
+                boidManager.Shoot(currentShootRequest.shootOrigin);
             }
-            boidManager.Shoot(currentShootRequest.shootOrigin);
         }
     }
 }
